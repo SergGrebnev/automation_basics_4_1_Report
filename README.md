@@ -1,3 +1,7 @@
+![image](https://github.com/user-attachments/assets/89b54650-519f-4158-8378-e1114e2de17e)
+
+
+
 [Исходник](https://github.com/netology-code/aqa-homeworks/tree/master/reporting)
 
 # Домашнее задание к занятию «4.1. Репортинг»
