@@ -1,5 +1,6 @@
 //Для запуска тестируемого приложения, находясь в корне проекта,
-// выполните в терминале команду: java -jar ./artifacts/app-replan-delivery.jar для первой задачи,
+// выполните в терминале команду: java -jar ./artifacts/app-replan-delivery.jar
+// для получения отчёта Allure выполнить в терминале IDEA команду gradle allureServe
 
 // Используется selenide
 
@@ -48,6 +49,7 @@ class DeliveryTest {
         // generateName(locale), generatePhone(locale) для генерации и получения в тесте соответственно города,
         // имени и номера телефона без создания пользователя в методе generateUser(String locale) в датагенераторе
 
+        //Запланирована встреча на первую дату
         $("[data-test-id='city'] input").setValue(validUser.getCity());
         $("[data-test-id ='date'] input").sendKeys(Keys.SHIFT, Keys.HOME); // выделение текста кнопками Shift+Home
         $("[data-test-id ='date'] input").sendKeys(firstMeetingDate);
@@ -56,9 +58,30 @@ class DeliveryTest {
         $("[data-test-id='agreement']").click();
         $(".button").click();
 
-        $("[data-test-id='notification'] .notification__content")
-                .shouldHave(Condition.text("Встреча успешно забронирована на " + secondMeetingDate), Duration.ofSeconds(15)) //ассерт проверки текста
-                .shouldBe(Condition.visible) //ассерт проверки видимости
+        //Проверка подтверждения успешного планирования на первую дату
+        $("[data-test-id='success-notification'] .notification__content")
+                .shouldBe(Condition.visible, Duration.ofSeconds(15)) //ассерт проверки видимости
+                .shouldHave(Condition.text("Встреча успешно запланирована на " + firstMeetingDate)) //ассерт проверки текста
         ;
+
+        //Повторная заявка того же пользователя на другую дату
+        $("[data-test-id ='date'] input").sendKeys(Keys.SHIFT, Keys.HOME); // выделение текста кнопками Shift+Home
+        $("[data-test-id ='date'] input").sendKeys(secondMeetingDate);
+        $(".button").click();
+
+        //Проверка предложения о переносе встречи на вторую дату
+        $("[data-test-id='replan-notification'] .notification__content")
+                .shouldBe(Condition.visible, Duration.ofSeconds(15)) //ассерт проверки видимости
+                .shouldHave(Condition.text("У вас уже запланирована встреча на другую дату. Перепланировать?")) //ассерт проверки текста
+        ;
+
+        $("[data-test-id='replan-notification'] .button").click();
+
+        //Проверка подтверждения успешного планирования на вторую дату
+        $("[data-test-id='success-notification'] .notification__content")
+                .shouldBe(Condition.visible, Duration.ofSeconds(15)) //ассерт проверки видимости
+                .shouldHave(Condition.text("Встреча успешно запланирована на " + secondMeetingDate)) //ассерт проверки текста
+        ;
+
     }
 }
